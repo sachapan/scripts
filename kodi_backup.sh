@@ -4,15 +4,11 @@
 # script to make a backup copy of the userdata directories and files
 # from a libreelec installation
 # assumes ssh key exchange has been completed.
-backupdir=/var/backups/kodi
-kodihosts=("fpkodi" "theater")
 
-#echo "kodihost total: ${kodihosts[*]}"
-#for i in ${kodihosts[@]};
-#do
-#    echo $i
-#done
-#exit
+# backupdir is where to store the....wait for it.....backups
+backupdir=/var/backups/kodi
+# kodihosts is the list of hosts to backup
+kodihosts=("fpkodi" "theater")
     
 for host in ${kodihosts[@]};
 do
@@ -34,9 +30,3 @@ do
 #    read -p "Press any key to continue..... " -n1 -s
 done
 
-#if [ -e $backupdir/theater_userdata.tar ]
-#then
-#    mv $backupdir/theater_userdata.tar $backupdir/theater_userdata_old.tar
-#fi
-#ssh root@fpkodi "tar cvf - /storage/.kodi/userdata" | dd of=$backupdir/fpkodi_userdata.tar
-#ssh root@theater "tar cvf - /storage/.kodi/userdata" | dd of=$backupdir/theater_userdata.tar
