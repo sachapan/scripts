@@ -1,0 +1,10 @@
+perl -e 's/^\s*$//'
+
+#perl -ane 'print unless /^$/;'
+
+#while (<>) {
+#	s/\s+$?//;
+#	print "$_";
+#}
+#exit;
+
