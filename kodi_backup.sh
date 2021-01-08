@@ -3,13 +3,16 @@
 # sachapan@gmail.com
 # script to make a backup copy of the userdata directories and files
 # from a libreelec installation
+# the current backup and the previous backup are kept
 # assumes ssh key exchange has been completed.
 
+# variables
 # backupdir is where to store the....wait for it.....backups
 backupdir=/var/backups/kodi
 # kodihosts is the list of hosts to backup
 kodihosts=("fpkodi" "theater")
-    
+
+# loop through the hosts
 for host in ${kodihosts[@]};
 do
     echo "Beginning run for $host"
