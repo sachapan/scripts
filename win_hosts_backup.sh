@@ -1,4 +1,7 @@
 #!/bin/sh
+# Script to use ssh, tar and dd to backup a windows computer running sshd
+# Sacha Panasuik
+# sachapan@gmail.com
 HOST=crystal-desktop
 USER=cryst
 DIR="/mnt/backup/crystal-desktop"
@@ -32,6 +35,6 @@ ssh $USER@$HOST "tar cvf - \
     | dd of=$DIR/$FILE.tar
 ls -l $DIR/$FILE.*
 echo "The backup for today is concluded."
-
+echo "Thank you for your cooperation."
 #    2>/mnt/Archive\ TV/backup/crystal-desktop/backup_crystal-desktop.log \
 #    | dd of=/mnt/Archive\ TV/backup/crystal-desktop/crystal-desktop_`date +%a`.tar
