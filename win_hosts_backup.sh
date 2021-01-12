@@ -1,20 +1,25 @@
 #!/bin/sh
-#ssh sacha@slave2 "tar cvf - \
-#    --exclude=AppData \
-#    --exclude=OneDrive \
-#    --exclude='Google\ Drive' \
-#    --exclude='.vagrant.d' \
-#    --exclude=.dotfiles.git \
-#    --exclude=.oh-my-zsh \
-#    --exclude=tmp \
-#    --exclude=Videos \
-#    --exclude='_.*' \
-#    --exclude='NTUSER.DAT' \
-#    ." \
-#    2>/mnt/Archive\ TV/backup/slave2/backup_slave2_test.log \
-#    | dd of=/mnt/Archive\ TV/backup/slave2/slave2_`date +%a`.tar
-
-ssh cryst@crystal-desktop "tar cvf - \
+HOST=crystal-desktop
+USER=cryst
+DIR="/mnt/backup/crystal-desktop"
+# Day of the month to create the monthly backup
+SPECIAL=12
+DOM=`date +%d`
+DOW=`date +%a`
+FULLDATE=`date +%F`
+echo "Beginning backup run for $HOST."
+if [ $DOM = $SPECIAL ]
+then
+    echo "Today is a special backup day."
+    FILE=backup_$HOST-$FULLDATE
+else
+    echo "Today is a regular backup day."
+    FILE=backup_$HOST-$DOW
+fi
+echo "backup will be stored at $DIR/$FILE.tar"
+echo "backup log will be stored at $DIR/$FILE.log"
+echo "Attempting to connect to $HOST as $USER."
+ssh $USER@$HOST "tar cvf - \
     --exclude=*/NTUSER* \
     --exclude=*/AppData \
     --exclude=*/Downloads \
@@ -23,6 +28,10 @@ ssh cryst@crystal-desktop "tar cvf - \
     --exclude=*/Music \
 	--exclude=*/Videos \
     /cygdrive/c/Users/" \
-    2>/mnt/Archive\ TV/backup/crystal-desktop/backup_crystal-desktop.log \
-    | dd of=/mnt/Archive\ TV/backup/crystal-desktop/crystal-desktop_`date +%a`.tar
+    2>$DIR/$FILE.log \
+    | dd of=$DIR/$FILE.tar
+ls -l $DIR/$FILE.*
+echo "The backup for today is concluded."
 
+#    2>/mnt/Archive\ TV/backup/crystal-desktop/backup_crystal-desktop.log \
+#    | dd of=/mnt/Archive\ TV/backup/crystal-desktop/crystal-desktop_`date +%a`.tar
