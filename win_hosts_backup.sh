@@ -10,7 +10,25 @@ SPECIAL=05
 DOM=`date +%d`
 DOW=`date +%a`
 FULLDATE=`date +%F`
+# Check for parameters
+#whole getopts t: flag
+echo "received command line parameters: $@"
+for arg in "$@"
+do
+    case "{$arg}" in
+#        -t) OUTPUT=${OPTARG};;
+        -t|--test)
+        TEST=1
+        shift
+    esac
+done
 date
+if $TEST 
+then
+    echo "This is just a test."
+    exit 1
+fi
+exit 1
 echo "Beginning backup run for $HOST."
 if [ $DOM = $SPECIAL ]
 then
@@ -39,5 +57,6 @@ date
 ls -l $DIR/$FILE.*
 echo "The backup for today is concluded."
 echo "Thank you for your cooperation."
+exit 0
 #    2>/mnt/Archive\ TV/backup/crystal-desktop/backup_crystal-desktop.log \
 #    | dd of=/mnt/Archive\ TV/backup/crystal-desktop/crystal-desktop_`date +%a`.tar
