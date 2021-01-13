@@ -5,11 +5,18 @@
 HOST=crystal-desktop
 USER=cryst
 DIR="/mnt/backup/crystal-desktop"
+TARGET="/cygdrive/c/Users/"
+EXCLUDE="/home/cryst/crystal-desktop_excludes"
 # Day of the month to create the monthly backup
 SPECIAL=05
 DOM=`date +%d`
 DOW=`date +%a`
 FULLDATE=`date +%F`
+MONTHLY=0
+if [ $DOM = $SPECIAL ]
+then
+    MONTHLY=1
+fi
 # Check for parameters
 #whole getopts t: flag
 echo "received command line parameters: $@"
@@ -19,7 +26,11 @@ do
 #        -t) OUTPUT=${OPTARG};;
         -t|--test)
         TEST=1
-        shift
+        shift;;
+        -m) OUTPUT=${OPTARG};;
+        -m|--monthly)
+        MONTHLY=1
+        shift;;
 # Add -m parameter to force monthly backup run
     esac
 done
@@ -30,9 +41,9 @@ date
 #    exit 1
 #fi
 echo "Beginning backup run for $HOST."
-if [ $DOM = $SPECIAL ]
+if $MONTHLY
 then
-    echo "Today is a special backup day."
+    echo "Today is a special backup day: performing monthly."
     FILE=backup_$HOST-$FULLDATE
 else
     echo "Today is a regular backup day."
@@ -49,15 +60,8 @@ fi
     echo "Backup log will be stored at $BACKUP_LOG"
     echo "Attempting to connect to $HOST as $USER."
     ssh $USER@$HOST "tar cvf - \
-     --exclude=*/NTUSER* \
-     --exclude=*/AppData \
-     --exclude=*/Downloads \
-     --exclude=*/Google\ Drive \
-     --exclude=*/MicrosoftEdgeBackups \
-     --exclude=*/OneDrive/backups \
-     --exclude=*/Music \
-     --exclude=*/Videos \
-     /cygdrive/c/Users/" \
+    -X $EXCLUDE \
+     $TARGET " \
      2>$BACKUP_LOG \
      | dd of=$BACKUP_FILE
     date
