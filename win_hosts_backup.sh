@@ -3,30 +3,45 @@
 # (I prefer cygwin sshd for historical reasons)
 # Sacha Panasuik
 # sachapan@gmail.com
+# User defined variables begin here:
+# Host to be backed up
 HOST=crystal-desktop
+# Remote user to connect as
 USER=cryst
+# local directory to direct backup to
 DIR="/mnt/backup/crystal-desktop"
-TARGET="/cygdrive/c/Users/"
+# directory to be backed up recursively
+TARGET="/cygdrive/c/Users/Intuit/"
 # A file stored on the remote system provides the file exclusion list
 EXCLUDE="/home/cryst/crystal-desktop_excludes"
-NOSSH=0
 # Day of the month to create the monthly backup
 SPECIAL=05
+# These variables are not user defined.
+# Today's day of Month
 DOM=`date +%d`
+# Today's day of week short name
 DOW=`date +%a`
+# Today's full date
 FULLDATE=`date +%F`
+# Zero out some variables to be used later
+# I'm old school and don't really on new variables being NULL
 MONTHLY=0
 MONTHLY_FLAG=0
+NOSSH=0
 TEST=0
+VERBOSE=0
+# program logic begins here
 # Determine if today is a monthly backup day
 if [ $DOM = $SPECIAL ]
 then
     MONTHLY=1
 fi
 func_separator(){
-    echo "--------------------------------------------------------"
+    # this function simply prints a pretty (or ugly) line
+    echo "-------------------------------------------------------------------------------------------"
 }    
 func_var_dump(){
+    # this function is for debugging purposes.  It dumps internal variables and then exits the script.
     func_separator
     echo "func_var_dump was called - that can't be good."
     echo "variables:"
@@ -44,13 +59,12 @@ func_var_dump(){
     echo " MONTHLY = $MONTHLY"
     echo " TEST = $TEST"
     echo " NOSSH = $NOSSH"
-    echo "--------------------------------------------------------"
+    echo " VERBOSE = $VERBOSE"
     exit 1
 }
+# Main program logic begins here
 echo "This script performs remote tar backups via ssh and pulls them back to this host: `hostname`"
-# Check for parameters
-#whole getopts t: flag
-echo "received command line parameters: $@"
+# Check for parameters entered on command line
 for arg in "$@"
 do
     case "$arg" in
@@ -72,23 +86,38 @@ do
         echo "-h or --help or --usage"
         echo "  Print this help text."
         echo "-m or --monthly"
-        echo "  Forced a monthly backup run."
+        echo "  Force a monthly backup run."
         echo "-n or --nossh"
-        echo "  Do not connect with ssh.  Useful for testing script changes without the overhead of "
-        echo "backup file creation."
+        echo "  Do not connect with ssh."
+        echo "Useful for testing script changes without the overhead of backup file creation."
         echo "-t or --test"
-        echo "  Output will be directed to usual location but both backup log and backup file will be"
-        echo "prepended with 'test_'"
+        echo "  Output will be directed to usual location but both backup log and backup file will "
+        echo "be prepended with 'test_'"
+        echo "-v or --verbose"
+        echo "Increase verbosity level."
+        echo
+        echo "With no command line parameters entered: just run the backup job."
         exit 0
+        shift
+        ;;
+        -v | --verbose)
+        VERBOSE=1
+        func_separator
+        echo "Verbosity level up."
+        echo "Received command line parameters: $@"
+        func_separator
+        shift
+        ;;
     esac
 done
 date
 echo "Beginning backup run for $HOST."
+func_separator
 if [ $MONTHLY = 1 ]
 then
     if [ $MONTHLY_FLAG = 1 ]
     then
-        echo "Monthly backup forced with -m flag."
+        echo "Monthly backup has been forced with -m flag."
     fi
     echo "Today is a special backup day: performing monthly."
     FILE=backup_$HOST-$FULLDATE
@@ -107,15 +136,15 @@ echo "Backup will be stored at $BACKUP_FILE"
 echo "Backup log will be stored at $BACKUP_LOG"
 if [ $NOSSH = 0 ]
 then
-    echo "Wheeeeee! fell into the NOSSH=0 condition."
-    func_var_dump
+#    func_var_dump
     echo "Attempting to connect to $HOST as $USER."
-#    ssh $USER@$HOST "tar cvf - -X $EXCLUDE $TARGET" 2>$BACKUP_LOG | dd of=$BACKUP_FILE
+    func_separator
+    ssh $USER@$HOST "tar cvf - -X $EXCLUDE $TARGET" 2>$BACKUP_LOG | dd of=$BACKUP_FILE
     date
     SIZE=`du -hs $BACKUP_FILE | awk '{print $1}'`
     echo "Backup File size: $SIZE"
 else
-    echo
+    func_separator
     echo "Ok, with the nossh option this is where we part company."
 fi
 echo
