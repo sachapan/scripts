@@ -11,7 +11,7 @@ USER=cryst
 # local directory to direct backup to
 DIR="/mnt/backup/crystal-desktop"
 # directory to be backed up recursively
-TARGET="/cygdrive/c/Users/Intuit/"
+TARGET="/cygdrive/c/Users/"
 # A file stored on the remote system provides the file exclusion list
 EXCLUDE="/home/cryst/crystal-desktop_excludes"
 # Day of the month to create the monthly backup
@@ -63,10 +63,10 @@ func_var_dump(){
     exit 1
 }
 # Main program logic begins here
-echo "This script performs remote tar backups via ssh and pulls them back to this host: `hostname`"
 # Check for parameters entered on command line
 for arg in "$@"
 do
+    echo "This script performs remote tar backups via ssh and pulls them back to this host: `hostname`"
     case "$arg" in
         -t|--test)
         TEST=1
