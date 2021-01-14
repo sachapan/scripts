@@ -66,7 +66,6 @@ func_var_dump(){
 # Check for parameters entered on command line
 for arg in "$@"
 do
-    echo "This script performs remote tar backups via ssh and pulls them back to this host: `hostname`"
     case "$arg" in
         -t|--test)
         TEST=1
@@ -82,7 +81,8 @@ do
         shift
         ;;
         -h | --help | --usage)
-        echo "Usage: win_hosts_backup.sh [OPTION]
+        echo "This script performs remote tar backups via ssh and pulls them back to this host: `hostname`"
+        echo "Usage: win_hosts_backup.sh [OPTION]"
         echo 
         echo "-h or --help or --usage       Print this help text."
         echo "-m or --monthly               Force a monthly backup run."
