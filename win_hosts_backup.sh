@@ -18,44 +18,44 @@ if [ $DOM = $SPECIAL ]
 then
     MONTHLY=1
 fi
-function var_debug () {
-    echo "var_debug was called."
+var_dump(){
+    echo "var_dump was called."
     echo "variables:"
-    echo "\t TEST = $TEST"
-    echo "\t NOSSH = $NOSSH"
-    echo "\t HOST = $HOST"
-    echo "\t USER = $USER"
-    echo "\t DIR = $DIR"
-    echo "\t TARGET = $TARGET"
-    echo "\t EXCLUDE = $EXCLUDE"
-    echo "\t BACKUP_FILE = $BACKUP_FILE"
-    echo "\t BACKUP_LOG = $BACKUP_LOG"
-    echo "\t DOM = $DOM"
-    echo "\t DOW = $DOW"
-    echo "\t MONTHLY = $MONTHLY"
-    echo "\t FULLDATE = $FULLDATE"
-    echo "\t SPECIAL = $SPECIAL"
-exit 1
+    echo " HOST = $HOST"
+    echo " USER = $USER"
+    echo " DOM = $DOM"
+    echo " DOW = $DOW"
+    echo " FULLDATE = $FULLDATE"
+    echo " SPECIAL = $SPECIAL"
+    echo " DIR = $DIR"
+    echo " TARGET = $TARGET"
+    echo " EXCLUDE = $EXCLUDE"
+    echo " BACKUP_FILE = $BACKUP_FILE"
+    echo " BACKUP_LOG = $BACKUP_LOG"
+    echo " MONTHLY = $MONTHLY"
+    echo " TEST = $TEST"
+    echo " NOSSH = $NOSSH"
+    exit 1
 }
 # Check for parameters
 #whole getopts t: flag
 echo "received command line parameters: $@"
 for arg in "$@"
 do
-    case "{$arg}" in
+    case "$arg" in
 #        -t) OUTPUT=${OPTARG};;
         -t|--test)
         TEST=1
-        shift;;
-        -m) OUTPUT=${OPTARG};;
+        shift
+        ;;
         -m|--monthly)
         MONTHLY=1
-        shift;;
-        -n) OUTPUT=${OPTARG};;
+        shift
+        ;;
         -n|--nossh)
         NOSSH=1
-        shift;;
-# Add -m parameter to force monthly backup run
+        shift
+        ;;
     esac
 done
 date
@@ -87,12 +87,12 @@ if [ $NOSSH = 0 ]
 then
     echo "we fell into the NOSSH=0 condition."
     echo "MONTHLY=$MONTHLY"
-    var_debug
+    var_dump
 #    ssh $USER@$HOST "tar cvf - -X $EXCLUDE $TARGET" 2>$BACKUP_LOG | dd of=$BACKUP_FILE
     date
 else
     echo "Ok, with the nossh option, this is where we end."
-    var_debug
+    var_dump
 fi
 #    ls -l $DIR/$FILE.*
     echo
