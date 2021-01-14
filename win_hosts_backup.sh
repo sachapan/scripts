@@ -14,11 +14,13 @@ DOM=`date +%d`
 DOW=`date +%a`
 FULLDATE=`date +%F`
 MONTHLY=0
+TEST=0
 if [ $DOM = $SPECIAL ]
 then
     MONTHLY=1
 fi
 var_dump(){
+    echo "--------------------------------------------------------"
     echo "var_dump was called."
     echo "variables:"
     echo " HOST = $HOST"
@@ -35,15 +37,16 @@ var_dump(){
     echo " MONTHLY = $MONTHLY"
     echo " TEST = $TEST"
     echo " NOSSH = $NOSSH"
+    echo "--------------------------------------------------------"
     exit 1
 }
+echo "This script performs remote tar backups via ssh and pulls them back to this host: `hostname`"
 # Check for parameters
 #whole getopts t: flag
 echo "received command line parameters: $@"
 for arg in "$@"
 do
     case "$arg" in
-#        -t) OUTPUT=${OPTARG};;
         -t|--test)
         TEST=1
         shift
@@ -70,12 +73,12 @@ then
     echo "Today is a special backup day: performing monthly."
     FILE=backup_$HOST-$FULLDATE
 else
-    echo "Today is a regular backup day."
+    echo "Today is a regular backup day: performing daily."
     FILE=backup_$HOST-$DOW
 fi
 BACKUP_FILE=$DIR/$FILE.tar
 BACKUP_LOG=$DIR/$FILE.log
-if [ $TEST = 1 ];
+if [ $TEST = 1 ]
 then 
     BACKUP_FILE=/dev/null
     BACKUP_LOG=$DIR/test_$FILE.log
@@ -86,18 +89,14 @@ fi
 if [ $NOSSH = 0 ]
 then
     echo "we fell into the NOSSH=0 condition."
-    echo "MONTHLY=$MONTHLY"
     var_dump
 #    ssh $USER@$HOST "tar cvf - -X $EXCLUDE $TARGET" 2>$BACKUP_LOG | dd of=$BACKUP_FILE
     date
 else
-    echo "Ok, with the nossh option, this is where we end."
-    var_dump
+    echo "Ok, with the nossh option this is where we part company."
 fi
 #    ls -l $DIR/$FILE.*
     echo
     echo "The backup for today is concluded."
     echo "Thank you for your cooperation."
 exit 0
-#    2>/mnt/Archive\ TV/backup/crystal-desktop/backup_crystal-desktop.log \
-#    | dd of=/mnt/Archive\ TV/backup/crystal-desktop/crystal-desktop_`date +%a`.tar
