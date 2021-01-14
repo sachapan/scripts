@@ -64,6 +64,19 @@ do
         NOSSH=1
         shift
         ;;
+        -h | --help | --usage)
+        echo "Usage options:"
+        echo "-h or --help or --usage"
+        echo "  Print this help text."
+        echo "-m or --monthly"
+        echo "  Forced a monthly backup run."
+        echo "-n or --nossh"
+        echo "  Do not connect with ssh.  Useful for testing script changes without the overhead of "
+        echo "backup file creation."
+        echo "-t or --test"
+        echo "  Output will be directed to usual location but both backup log and backup file will be"
+        echo "prepended with 'test_'"
+        exit 0
     esac
 done
 date
