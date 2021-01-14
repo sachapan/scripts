@@ -23,9 +23,12 @@ if [ $DOM = $SPECIAL ]
 then
     MONTHLY=1
 fi
-var_dump(){
+func_separator(){
     echo "--------------------------------------------------------"
-    echo "var_dump was called - that can't be good."
+}    
+func_var_dump(){
+    func_separator
+    echo "func_var_dump was called - that can't be good."
     echo "variables:"
     echo " HOST = $HOST"
     echo " USER = $USER"
@@ -100,20 +103,22 @@ then
     BACKUP_FILE=/dev/null
     BACKUP_LOG=$DIR/test_$FILE.log
 fi
-    echo "Backup will be stored at $BACKUP_FILE"
-    echo "Backup log will be stored at $BACKUP_LOG"
+echo "Backup will be stored at $BACKUP_FILE"
+echo "Backup log will be stored at $BACKUP_LOG"
 if [ $NOSSH = 0 ]
 then
     echo "Wheeeeee! fell into the NOSSH=0 condition."
-    var_dump
+    func_var_dump
     echo "Attempting to connect to $HOST as $USER."
 #    ssh $USER@$HOST "tar cvf - -X $EXCLUDE $TARGET" 2>$BACKUP_LOG | dd of=$BACKUP_FILE
     date
+    SIZE=`du -hs $BACKUP_FILE | awk '{print $1}'`
+    echo "Backup File size: $SIZE"
 else
+    echo
     echo "Ok, with the nossh option this is where we part company."
 fi
-#    ls -l $DIR/$FILE.*
-    echo
-    echo "The backup for today is concluded."
-    echo "Thank you for your cooperation."
+echo
+echo "The backup for today is concluded."
+echo "Thank you for your cooperation."
 exit 0
