@@ -82,19 +82,13 @@ do
         shift
         ;;
         -h | --help | --usage)
-        echo "Usage options:"
-        echo "-h or --help or --usage"
-        echo "  Print this help text."
-        echo "-m or --monthly"
-        echo "  Force a monthly backup run."
-        echo "-n or --nossh"
-        echo "  Do not connect with ssh."
-        echo "Useful for testing script changes without the overhead of backup file creation."
-        echo "-t or --test"
-        echo "  Output will be directed to usual location but both backup log and backup file will "
-        echo "be prepended with 'test_'"
-        echo "-v or --verbose"
-        echo "Increase verbosity level."
+        echo "Usage: win_hosts_backup.sh [OPTION]
+        echo 
+        echo "-h or --help or --usage       Print this help text."
+        echo "-m or --monthly               Force a monthly backup run."
+        echo "-n or --nossh                 Do not connect with ssh - useful for testing only."
+        echo "-t or --test                  Output files prepended with 'test_'"
+        echo "-v or --verbose               Increase verbosity level."
         echo
         echo "With no command line parameters entered: just run the backup job."
         exit 0
