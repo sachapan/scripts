@@ -1,11 +1,13 @@
 #!/bin/sh
 # Script to use ssh, tar and dd to backup a windows computer running sshd
+# (I prefer cygwin sshd for historical reasons)
 # Sacha Panasuik
 # sachapan@gmail.com
 HOST=crystal-desktop
 USER=cryst
 DIR="/mnt/backup/crystal-desktop"
 TARGET="/cygdrive/c/Users/"
+# A file stored on the remote system provides the file exclusion list
 EXCLUDE="/home/cryst/crystal-desktop_excludes"
 NOSSH=0
 # Day of the month to create the monthly backup
@@ -14,14 +16,16 @@ DOM=`date +%d`
 DOW=`date +%a`
 FULLDATE=`date +%F`
 MONTHLY=0
+MONTHLY_FLAG=0
 TEST=0
+# Determine if today is a monthly backup day
 if [ $DOM = $SPECIAL ]
 then
     MONTHLY=1
 fi
 var_dump(){
     echo "--------------------------------------------------------"
-    echo "var_dump was called."
+    echo "var_dump was called - that can't be good."
     echo "variables:"
     echo " HOST = $HOST"
     echo " USER = $USER"
@@ -53,6 +57,7 @@ do
         ;;
         -m|--monthly)
         MONTHLY=1
+        MONTHLY_FLAG=1
         shift
         ;;
         -n|--nossh)
@@ -62,14 +67,13 @@ do
     esac
 done
 date
-#if $TEST 
-#then
-#    echo "This is just a test."
-#    exit 1
-#fi
 echo "Beginning backup run for $HOST."
 if [ $MONTHLY = 1 ]
 then
+    if [ $MONTHLY_FLAG = 1 ]
+    then
+        echo "Monthly backup forced with -m flag."
+    fi
     echo "Today is a special backup day: performing monthly."
     FILE=backup_$HOST-$FULLDATE
 else
@@ -85,11 +89,11 @@ then
 fi
     echo "Backup will be stored at $BACKUP_FILE"
     echo "Backup log will be stored at $BACKUP_LOG"
-    echo "Attempting to connect to $HOST as $USER."
 if [ $NOSSH = 0 ]
 then
-    echo "we fell into the NOSSH=0 condition."
+    echo "Wheeeeee! fell into the NOSSH=0 condition."
     var_dump
+    echo "Attempting to connect to $HOST as $USER."
 #    ssh $USER@$HOST "tar cvf - -X $EXCLUDE $TARGET" 2>$BACKUP_LOG | dd of=$BACKUP_FILE
     date
 else
