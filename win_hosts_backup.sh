@@ -137,6 +137,10 @@ then
   date
   SIZE=`du -hs $BACKUP_FILE | awk '{print $1}'`
   echo "Backup File size: $SIZE"
+  if [ $VERBOSE = 1 ]
+  then
+      cat $BACKUP_LOG
+  fi
 else
   func_separator
   echo "Ok, with the nossh option this is where we part company."
