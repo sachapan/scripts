@@ -1,0 +1,7 @@
+general:
+    host:       crystal-desktop
+    user:       cryst
+    dir:        /mnt/backup/crystal-desktop
+    target:     /cygdrive/c/Users/
+    exclude:    /home/cryst/crystal-desktop_excludes
+    special:    05
