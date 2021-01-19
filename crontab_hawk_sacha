@@ -22,5 +22,5 @@
 # 
 # m h  dom mon dow   command
 #0 4 * * 2 rsync -axrvp /var/tftp /mnt/Archive\ TV/backup/hawk/
-5 2 * * * ~/scripts/cdesktop_usb_backup.sh
-4 3 * * * ~/scripts/win_hosts_backup.sh
+5 2 * * 4 ~/scripts/cdesktop_usb_backup.sh
+4 3 * * * ~/scripts/win_hosts_backup.sh | telegram-send --stdin -g
