@@ -73,21 +73,25 @@ do
     ;;
     -u|--user)
       USER=$2
+      echo "USER variable set to: $USER"
       shift
       shift
     ;;
     -x|--exclude)
       EXCLUDE=$2
+      echo "EXCLUDE variable set to: $EXCLUDE"
       shift
       shift
     ;;
     -r|--remote)
       HOST=$2
+      echo "HOST variable set to: $HOST"
       shift
       shift
     ;;
     -d|--dir)
       DIR=$2
+      echo "DIR variable set to: $DIR"
       shift
       shift
     ;;
