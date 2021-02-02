@@ -71,33 +71,40 @@ do
       TEST=1
       shift
     ;;
+    -b|--backup)
+      TARGET=$2
+      echo "Remote backup directory TARGET is: $TARGET"
+      shift
+      shift
+    ;;
     -u|--user)
       USER=$2
-      echo "USER variable set to: $USER"
+      echo "Remote user is: $USER"
       shift
       shift
     ;;
     -x|--exclude)
       EXCLUDE=$2
-      echo "EXCLUDE variable set to: $EXCLUDE"
+      echo "EXCLUDE file is: $EXCLUDE"
       shift
       shift
     ;;
     -r|--remote)
       HOST=$2
-      echo "HOST variable set to: $HOST"
+      echo "Remote host is: $HOST"
       shift
       shift
     ;;
     -d|--dir)
       DIR=$2
-      echo "DIR variable set to: $DIR"
+      echo "Local directory target is: $DIR"
       shift
       shift
     ;;
     -m|--monthly)
       MONTHLY=1
       MONTHLY_FLAG=1
+      echo "Monthly flag set from command line."
       shift
       ;;
     -n|--nossh)
@@ -108,6 +115,8 @@ do
       echo "This script performs remote tar backups via ssh and pulls them back to this host: `hostname`"
       echo "Usage: win_hosts_backup.sh [OPTION]"
       echo 
+      echo "-b name or --backup name      Remote directory to recursively backup."
+      echo "                              Default is: $TARGET."
       echo "-d name or --dir name         Set backup directory to name."
       echo "                              Default is $DIR."
       echo "-h or --help or --usage       Print this help text."
@@ -158,6 +167,11 @@ if [ $TEST = 1 ]
 then 
   BACKUP_FILE=/dev/null
   BACKUP_LOG=$DIR/test_$FILE.log
+fi
+# Add test for $DIR existance
+if [ ! -d $DIR ];
+then 
+    mkdir $DIR
 fi
 echo "Backup will be stored at $BACKUP_FILE"
 echo "Backup log will be stored at $BACKUP_LOG"
