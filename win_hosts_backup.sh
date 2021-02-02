@@ -9,7 +9,7 @@ HOST=crystal-desktop
 # Remote user to connect as
 USER=cryst
 # local directory to direct backup to
-DIR="/mnt/backup/crystal-desktop"
+DIR="/mnt/backup/$HOST"
 # directory to be backed up recursively
 TARGET="/cygdrive/c/Users/"
 # A file stored on the remote system provides the file exclusion list
@@ -71,6 +71,26 @@ do
       TEST=1
       shift
     ;;
+    -u|--user)
+      USER=$2
+      shift
+      shift
+    ;;
+    -x|--exclude)
+      EXCLUDE=$2
+      shift
+      shift
+    ;;
+    -r|--remote)
+      HOST=$2
+      shift
+      shift
+    ;;
+    -d|--dir)
+      DIR=$2
+      shift
+      shift
+    ;;
     -m|--monthly)
       MONTHLY=1
       MONTHLY_FLAG=1
@@ -84,13 +104,22 @@ do
       echo "This script performs remote tar backups via ssh and pulls them back to this host: `hostname`"
       echo "Usage: win_hosts_backup.sh [OPTION]"
       echo 
+      echo "-d name or --dir name         Set backup directory to name."
+      echo "                              Default is $DIR."
       echo "-h or --help or --usage       Print this help text."
       echo "-m or --monthly               Force a monthly backup run."
       echo "-n or --nossh                 Do not connect with ssh - useful for testing only."
-      echo "-t or --test                  Output files prepended with 'test_'"
+      echo "-r host or --remote host      The remote host to connect to."
+      echo "                              Default is $HOST."
+      echo "-t or --test                  Output log file prepended with 'test_' and direct "
+      echo "                              output file to /dev/null"
+      echo "-u name or --user name        Set user to name.  This is the remote ssh user."
+      echo "                              Default is: $USER."
+      echo "-x file or --exclude file     Filename that contains the exclusions."
+      echo "                              Default is $EXCLUDE."
       echo "-v or --verbose               Increase verbosity level."
       echo
-      echo "With no command line parameters entered: just run the backup job."
+      echo "With no command line parameters entered: just run the backup job with default parameters."
       exit 0
       shift
       ;;
