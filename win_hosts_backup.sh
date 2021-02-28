@@ -5,7 +5,7 @@
 # sachapan@gmail.com
 # User defined variables begin here:
 # Host to be backed up
-HOST=crystal-desktop
+HOST=crystal-aio
 # Remote user to connect as
 USER=cryst
 # local directory to direct backup to
