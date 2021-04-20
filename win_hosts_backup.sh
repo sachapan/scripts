@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Script to use ssh, tar and dd to backup a windows computer running sshd
 # (I prefer cygwin sshd for historical reasons)
 # Sacha Panasuik
@@ -16,7 +16,7 @@ TARGET="/cygdrive/c/Users/"
 EXCLUDE="/home/cryst/crystal-desktop_excludes"
 # Day of the month to create the monthly backup
 SPECIAL=05
-# These variables are not user defined.
+# These variables are not user defined from the command line.
 # Today's day of Month
 DOM=`date +%d`
 # Today's day of week short name
@@ -24,10 +24,11 @@ DOW=`date +%a`
 # Today's full date
 FULLDATE=`date +%F`
 # Zero out some variables to be used later
-# I'm old school and don't really on new variables being NULL
+# I'm old school and don't rely on new variables being NULL
 MONTHLY=0
 MONTHLY_FLAG=0
 NOSSH=0
+SECONDS=0
 TEST=0
 VERBOSE=0
 # program logic begins here
@@ -178,10 +179,11 @@ echo "Backup log will be stored at $BACKUP_LOG"
 if [ $NOSSH = 0 ]
 then
 #    func_var_dump
+# Add test for successful ssh connection to limit null backup overwriting a good one.
   echo "Attempting to connect to $HOST as $USER."
   func_separator
   ssh $USER@$HOST "tar cvf - -X $EXCLUDE $TARGET" 2>$BACKUP_LOG | dd of=$BACKUP_FILE
-  date
+# date
   SIZE=`du -hs $BACKUP_FILE | awk '{print $1}'`
   echo "Backup File size: $SIZE"
   if [ $VERBOSE = 1 ]
@@ -192,7 +194,8 @@ else
   func_separator
   echo "Ok, with the nossh option this is where we part company."
 fi
-echo
+duration=$SECONDS
 echo "The backup for today is concluded."
+echo "$(($duration / 60)) minutes and $(($duration % 60)) seconds to complete."
 echo "Thank you for your cooperation."
 exit 0
