@@ -5,6 +5,8 @@
 # Sacha Panasuik
 # sachapan@gmail.com
 # Initial script creation: January 14, 2021
+# imports
+import sys
 
 # Set some variables
 # Read variables from config file?
@@ -18,5 +20,5 @@
 # report backup results
 
 
-if __name__ == "__main__":
-    main()
+if __name__ == '__main__':
+        
