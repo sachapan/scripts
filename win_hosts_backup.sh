@@ -1,6 +1,6 @@
-#!/bin/bash
-# Script to use ssh, tar and dd to backup a windows computer running sshd
-# (I prefer cygwin sshd for historical reasons)
+#!/bin/sh
+# Script to use ssh, tar and dd to backup a computer running sshd
+# (I prefer cygwin sshd on windows hosts for historical reasons)
 # Sacha Panasuik
 # sachapan@gmail.com
 # User defined variables begin here:
@@ -24,7 +24,7 @@ DOW=`date +%a`
 # Today's full date
 FULLDATE=`date +%F`
 # Zero out some variables to be used later
-# I'm old school and don't rely on new variables being NULL
+# I'm old school and don't really on new variables being NULL
 MONTHLY=0
 MONTHLY_FLAG=0
 NOSSH=0
@@ -110,6 +110,8 @@ do
       ;;
     -n|--nossh)
       NOSSH=1
+      HOST=`hostname -s`
+      DIR="/mnt/backup/$HOST"
       shift
       ;;
     -h | --help | --usage)
@@ -122,7 +124,7 @@ do
       echo "                              Default is $DIR."
       echo "-h or --help or --usage       Print this help text."
       echo "-m or --monthly               Force a monthly backup run."
-      echo "-n or --nossh                 Do not connect with ssh - useful for testing only."
+      echo "-n or --nossh                 Do not connect with ssh - i.e. perform local backup."
       echo "-r host or --remote host      The remote host to connect to."
       echo "                              Default is $HOST."
       echo "-t or --test                  Output log file prepended with 'test_' and direct "
@@ -147,8 +149,8 @@ do
       ;;
   esac
 done
-date
 echo "Beginning backup run for $HOST."
+date
 func_separator
 if [ $MONTHLY = 1 ]
 then
@@ -179,23 +181,22 @@ echo "Backup log will be stored at $BACKUP_LOG"
 if [ $NOSSH = 0 ]
 then
 #    func_var_dump
-# Add test for successful ssh connection to limit null backup overwriting a good one.
+# TODO: Add test for successful ssh connection to limit null backup overwriting a good one.
   echo "Attempting to connect to $HOST as $USER."
   func_separator
   ssh $USER@$HOST "tar cvf - -X $EXCLUDE $TARGET" 2>$BACKUP_LOG | dd of=$BACKUP_FILE
-# date
-  SIZE=`du -hs $BACKUP_FILE | awk '{print $1}'`
-  echo "Backup File size: $SIZE"
-  if [ $VERBOSE = 1 ]
-  then
-      cat $BACKUP_LOG
-  fi
 else
-  func_separator
-  echo "Ok, with the nossh option this is where we part company."
+  echo "Ok, the nossh option means local backup has been enabled."
+  tar cvf - -X $EXCLUDE $TARGET 2>$BACKUP_LOG | dd of=$BACKUP_FILE
 fi
-duration=$SECONDS
+SIZE=`du -hs $BACKUP_FILE | awk '{print $1}'`
+echo "Backup File size: $SIZE"
+if [ $VERBOSE = 1 ]
+then
+  cat $BACKUP_LOG
+fi
 echo "The backup for today is concluded."
+duration=$SECONDS
 echo "$(($duration / 60)) minutes and $(($duration % 60)) seconds to complete."
 echo "Thank you for your cooperation."
 exit 0
