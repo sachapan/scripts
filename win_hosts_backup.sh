@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Script to use ssh, tar and dd to backup a computer running sshd
 # (I prefer cygwin sshd on windows hosts for historical reasons)
 # Sacha Panasuik
@@ -196,6 +196,7 @@ then
   cat $BACKUP_LOG
 fi
 echo "The backup for today is concluded."
+date
 duration=$SECONDS
 echo "$(($duration / 60)) minutes and $(($duration % 60)) seconds to complete."
 echo "Thank you for your cooperation."
