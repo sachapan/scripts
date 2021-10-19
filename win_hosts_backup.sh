@@ -24,7 +24,7 @@ DOW=`date +%a`
 # Today's full date
 FULLDATE=`date +%F`
 # Zero out some variables to be used later
-# I'm old school and don't really on new variables being NULL
+# I'm old school and don't really trust new variables will be NULL
 MONTHLY=0
 MONTHLY_FLAG=0
 NOSSH=0
@@ -39,7 +39,7 @@ then
 fi
 func_separator(){
   # this function simply prints a pretty (or ugly) line
-  echo "-------------------------------------------------------------------------------------------"
+  echo "-------------------------------------------------------------"
 }    
 func_var_dump(){
 # this function is for debugging purposes.  It dumps internal variables and then exits the script.
@@ -74,7 +74,7 @@ do
     ;;
     -b|--backup)
       TARGET=$2
-      echo "Remote backup directory TARGET is: $TARGET"
+      echo "Backup target is: $TARGET"
       shift
       shift
     ;;
@@ -179,13 +179,22 @@ fi
 echo "Backup will be stored at $BACKUP_FILE"
 echo "Backup log will be stored at $BACKUP_LOG"
 if [ $NOSSH = 0 ]
-then
+  then
 #    func_var_dump
 # TODO: Add test for successful ssh connection to limit null backup overwriting a good one.
   echo "Attempting to connect to $HOST as $USER."
   func_separator
-  ssh $USER@$HOST "tar cvf - -X $EXCLUDE $TARGET" 2>$BACKUP_LOG | dd of=$BACKUP_FILE
-else
+  ssh -q $USER@$HOST "exit"
+  if [ $? == 0 ]
+    then
+       echo "Connection successful."
+       echo "Performing Backup."
+       ssh -q $USER@$HOST "tar cvf - -X $EXCLUDE $TARGET" 2>$BACKUP_LOG | dd of=$BACKUP_FILE
+    else
+       echo "Connection failed."
+       exit 1
+    fi
+  else
   echo "Ok, the nossh option means local backup has been enabled."
   tar cvf - -X $EXCLUDE $TARGET 2>$BACKUP_LOG | dd of=$BACKUP_FILE
 fi
