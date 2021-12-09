@@ -17,5 +17,6 @@ if __name__ == '__main__':
             if line[0].isdigit():
                 continue
             file2.writelines((line,'\n'))
-            print(str(line.lstrip("\n")),end="\n")
+        print('Subtitle processing complete.')
+        print('Output is now available in file:',output_file)
     sys.exit()
