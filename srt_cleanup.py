@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
+# Author: Sacha Panasuik sachapan@gmail.com
+# Initial creation date: December 9, 2021
 import os
 import sys
 from bs4 import BeautifulSoup
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
+        print('Usage: srt_cleanup.py [raw srt filename] [output filename]','\n')
         print('This script processes a file containing raw subtitle (srt) text and produces basic formatted text directed to an output file.')
-        print()
-        print('Usage: srt_cleanup.py [raw srt filename] [output filename]')
+        print('Both filenames are required.')
         sys.exit()
     input_file = sys.argv[1]
     output_file = sys.argv[2]
