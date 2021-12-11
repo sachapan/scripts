@@ -13,7 +13,7 @@ if __name__ == '__main__':
         sys.exit()
     input_file = sys.argv[1]
     output_file = sys.argv[2]
-    with open(input_file,'r') as file1, open(output_file,'w') as file2:
+    with open(input_file,'r',encoding='utf8') as file1, open(output_file,'w',encoding='utf8') as file2:
         soup = BeautifulSoup(file1,"html.parser")
         for line in soup.stripped_strings:
             if line[0].isdigit():
