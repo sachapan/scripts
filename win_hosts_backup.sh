@@ -188,32 +188,35 @@ then
   BACKUP_FILE=/dev/null
   BACKUP_LOG=$DIR/test_$FILE.log
 fi
-# Add test for $DIR existance
 if [ ! -d $DIR ];
 then 
     mkdir $DIR
 fi
 func_quiet_echo "Backup will be stored at $BACKUP_FILE"
 func_quiet_echo "Backup log will be stored at $BACKUP_LOG"
+if [ QUIET = 0 ]
+  then
+    dd_cmd="dd of=$BACKUP_FILE"
+  else
+    dd_cmd="dd status=none of=$BACKUP_FILE"
+fi
 if [ $NOSSH = 0 ]
   then
 #    func_var_dump
-# TODO: Add test for successful ssh connection to limit null backup overwriting a good one.
   func_quiet_echo "Attempting to connect to $HOST as $USER."
-#  func_separator
   ssh -q $USER@$HOST "exit"
   if [ $? == 0 ]
     then
        func_quiet_echo "Connection successful."
        echo "Performing Backup."
-       ssh -q $USER@$HOST "tar cvf - -X $EXCLUDE $TARGET" 2>$BACKUP_LOG | dd status="none" of=$BACKUP_FILE
+       ssh -q $USER@$HOST "tar cvf - -X $EXCLUDE $TARGET" 2>$BACKUP_LOG | $dd_cmd
     else
        echo "Connection failed."
        exit 1
     fi
   else
   func_quiet_echo "Ok, the nossh option means local backup has been enabled."
-  tar cvf - -X $EXCLUDE $TARGET 2>$BACKUP_LOG | dd status="none" of=$BACKUP_FILE
+  tar cvf - -X $EXCLUDE $TARGET 2>$BACKUP_LOG | $dd_cmd
 fi
 SIZE=`du -hs $BACKUP_FILE | awk '{print $1}'`
 echo "Backup File size: $SIZE"
