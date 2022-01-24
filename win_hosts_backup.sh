@@ -227,6 +227,11 @@ fi
 func_quiet_echo "The backup for today is concluded."
 #date
 duration=$SECONDS
-echo "$(($duration / 60)) minutes and $(($duration % 60)) seconds to complete."
+if [ $(($duration / 60)) = 0 ]
+  then
+    echo "$(($duration % 60)) seconds to complete."
+  else
+    echo "$(($duration / 60)) minutes and $(($duration % 60)) seconds to complete."
+fi
 func_quiet_echo "Thank you for your cooperation."
 exit 0
