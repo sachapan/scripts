@@ -26,10 +26,7 @@ def main():
     verbose_level = False
     day_of_month = datetime.today().strftime('%d')
     day_of_week = datetime.today().strftime('%a')
-    print("Today is", day_of_week)
-    print("Day of month:", day_of_month)
     full_date = datetime.today().strftime('%F')
-    print("Full date is:", full_date)
     nossh = False
     test_run = False
     parser = argparse.ArgumentParser()
@@ -85,11 +82,11 @@ def main():
             del args.verbose
             json.dump(vars(args), f, indent=4)
         exit()
-    for arg in [args]:
-        print(arg)
-    # print(args.remote)
-    # for host in args.remote:
-   # Determine if monthly should be run.
+    # for arg in [args]:
+        #    print(arg)
+        # print(args.remote)
+        # for host in args.remote:
+       # Determine if monthly should be run.
     if args.monthly:
         if args.verbose:
             print("Monthly flag detected.")
@@ -99,38 +96,39 @@ def main():
             print("No monthly flag set.")
     if monthly:
         print("Monthly backup today.")
-        backupfile = arg.directory+'/backup_'+arg.remote+'-'+full_date+'.tar'
+        backupfile = args.directory+'/backup_'+args.remote+'-'+full_date+'.tar'
     else:
-        backupfile = arg.directory+'/backup_'+arg.remote+'-'+day_of_week+'.tar'
+        backupfile = args.directory+'/backup_'+args.remote+'-'+day_of_week+'.tar'
     backuplog = backupfile.split('.')[0]+'.log'
-    print(backupfile)
-    print(backuplog)
-    if not os.path.exists(arg.directory):
-        print(arg.directory, "does not exist.  Creating it.")
-        os.makedirs(arg.directory)
-    if not arg.quiet:
+    if args.verbose:
+        print("Backup will be stored in: ", backupfile)
+        print("Backup log will be stored in: ", backuplog)
+    if not os.path.exists(args.directory):
+        print(args.directory, "does not exist.  Creating it.")
+        os.makedirs(args.directory)
+    if not args.quiet:
         dd_cmd = 'dd of='+backupfile
     else:
         dd_cmd = 'dd status=none of='+backupfile
 # perform backup
     # first test for successful ssh connection if we are doing that sort of thing.
     if not nossh:
-        ssh_test = 'ssh -q '+arg.user+'@'+arg.remote+' exit'
-        if arg.verbose:
+        ssh_test = 'ssh -q '+args.user+'@'+args.remote+' exit'
+        if args.verbose:
             print("Testing ssh connection with:", ssh_test)
         if os.system(ssh_test) != 0:
             raise Exception('Cannot connect with: '+ssh_test)
-        ssh_cmd = 'ssh '+arg.user+'@'+arg.remote + \
-            ' \"tar cvf - -X '+arg.exclude+' ' + \
-            ' '.join(arg.backup)+'\" 2>'+backuplog+' | '+dd_cmd
+        ssh_cmd = 'ssh '+args.user+'@'+args.remote + \
+            ' \"tar cvf - -X '+args.exclude+' ' + \
+            ' '.join(args.backup)+'\" 2>'+backuplog+' | '+dd_cmd
         if os.system(ssh_cmd) != 0:
             raise Exception('ssh backup failed.')
-        # +\
-        #    arg.exclude+arg.backup
-        #+'2>'+backuplog+' | '+dd_cmd
-        # print(ssh_cmd)
-
-# report backup results
+        backupsize = os.path.getsize(backupfile)
+        backuplogsize = os.path.getsize(backuplog)
+        if not args.quiet:
+            print("Backup file is:", backupsize, " bytes.")
+            if args.verbose:
+                print("Backup log file is:", backuplogsize, " bytes.")
 
 
 if __name__ == '__main__':
