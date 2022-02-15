@@ -108,16 +108,27 @@ def main():
     if not os.path.exists(arg.directory):
         print(arg.directory, "does not exist.  Creating it.")
         os.makedirs(arg.directory)
-
-#
+    if not arg.quiet:
+        dd_cmd = 'dd of='+backupfile
+    else:
+        dd_cmd = 'dd status=none of='+backupfile
 # perform backup
     # first test for successful ssh connection if we are doing that sort of thing.
     if not nossh:
-        ssh_cmd = 'ssh -q '+arg.user+'@'+arg.remote+' exit'
+        ssh_test = 'ssh -q '+arg.user+'@'+arg.remote+' exit'
         if arg.verbose:
-            print("Testing ssh connection with:", ssh_cmd)
+            print("Testing ssh connection with:", ssh_test)
+        if os.system(ssh_test) != 0:
+            raise Exception('Cannot connect with: '+ssh_test)
+        ssh_cmd = 'ssh '+arg.user+'@'+arg.remote + \
+            ' \"tar cvf - -X '+arg.exclude+' ' + \
+            ' '.join(arg.backup)+'\" 2>'+backuplog+' | '+dd_cmd
         if os.system(ssh_cmd) != 0:
-            raise Exception('Cannot connect with '+ssh_cmd)
+            raise Exception('ssh backup failed.')
+        # +\
+        #    arg.exclude+arg.backup
+        #+'2>'+backuplog+' | '+dd_cmd
+        # print(ssh_cmd)
 
 # report backup results
 
