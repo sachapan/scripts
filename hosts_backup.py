@@ -95,7 +95,8 @@ def main():
             print("Monthly flag detected.")
         monthly = True
     else:
-        print("No monthly flag set.")
+        if args.verbose:
+            print("No monthly flag set.")
     if monthly:
         print("Monthly backup today.")
         backupfile = arg.directory+'/backup_'+arg.remote+'-'+full_date+'.tar'
@@ -110,6 +111,14 @@ def main():
 
 #
 # perform backup
+    # first test for successful ssh connection if we are doing that sort of thing.
+    if not nossh:
+        ssh_cmd = 'ssh -q '+arg.user+'@'+arg.remote+' exit'
+        if arg.verbose:
+            print("Testing ssh connection with:", ssh_cmd)
+        if os.system(ssh_cmd) != 0:
+            raise Exception('Cannot connect with '+ssh_cmd)
+
 # report backup results
 
 
