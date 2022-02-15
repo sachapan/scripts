@@ -34,7 +34,7 @@ def main():
     test_run = False
     parser = argparse.ArgumentParser()
     parser.add_argument('--save_json',
-                        help='Save settings to file in json format.')
+                        help='Save settings to file in json format.  Only save, do not run.')
     parser.add_argument('-b', '--backupdir', type=str, nargs="+", required=False,
                         help='Directory/ies to backup.')
     parser.add_argument('--load_json',
@@ -45,6 +45,8 @@ def main():
                         help='Local directory backup target.')
     parser.add_argument('-u', '--user', type=str, required=False,
                         help='The remote user to connect as.')
+    parser.add_argument('-q', '--quiet', action='store_true', required=False,
+                        help='Decrease verbosity.')
     parser.add_argument('-v', '--verbose', action='store_true', required=False,
                         help='Increase verbosity.')
     parser.add_argument('-x', '--exclude', type=str, nargs='+', required=False,
@@ -82,13 +84,15 @@ def main():
             del args.save_json
             del args.verbose
             json.dump(vars(args), f, indent=4)
+        exit()
     for arg in [args]:
         print(arg)
     # print(args.remote)
     # for host in args.remote:
    # Determine if monthly should be run.
     if args.monthly:
-        print("Monthly flag detected.")
+        if args.verbose:
+            print("Monthly flag detected.")
         monthly = True
     else:
         print("No monthly flag set.")
