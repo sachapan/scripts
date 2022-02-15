@@ -105,12 +105,12 @@ def main():
     # print(args.remote)
     # for host in args.remote:
     #    print(host)
+# Determine if monthly should be run.
     if args.monthly:
         print("Monthly flag detected.")
+        monthly = True
     else:
         print("No monthly flag set.")
-
-# determine if a monthly backup should be performed
 
 # perform backup
 
