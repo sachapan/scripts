@@ -11,28 +11,31 @@ import argparse
 import json
 from datetime import datetime
 
-# initialize variables
-host = ""
-username = ""
-dir = ""
-target = ""
-exclude = ""
-monthly_day = ""
-monthly = False
-verbose_level = False
-day_of_month = ""
-day_of_week = datetime.today().strftime('%a')
-print("Today is", day_of_week)
-full_date = ""
-nossh = False
-test_run = False
-
 
 def main():
+    # initialize variables
+    host = ""
+    username = ""
+    dir = ""
+    backupfile = ""
+    backuppath = ""
+    target = ""
+    exclude_file = ""
+    monthly_day = ""
+    monthly = False
+    verbose_level = False
+    day_of_month = datetime.today().strftime('%d')
+    day_of_week = datetime.today().strftime('%a')
+    print("Today is", day_of_week)
+    print("Day of month:", day_of_month)
+    full_date = datetime.today().strftime('%F')
+    print("Full date is:", full_date)
+    nossh = False
+    test_run = False
     parser = argparse.ArgumentParser()
     parser.add_argument('--save_json',
                         help='Save settings to file in json format.')
-    parser.add_argument('-b', '--backup', type=str, nargs="+", required=False,
+    parser.add_argument('-b', '--backupdir', type=str, nargs="+", required=False,
                         help='Directory/ies to backup.')
     parser.add_argument('--load_json',
                         help='Load settings from file in json format. Command line options override loaded values.')
@@ -60,7 +63,17 @@ def main():
             t_args = argparse.Namespace()
             t_args.__dict__.update(json.load(f))
             args = parser.parse_args(namespace=t_args)
-    #        print(args)
+            # host = args.remote
+            # dir = args.directory
+            # exclude_file = args.exclude
+            # backup = args.backupdir
+            # username = args.user
+            # nossh = args.nossh
+            # monthly = args.monthly
+            # monthly_day = args.monthly_date
+            # verbose_level = args.verbose
+            # #    print(host)
+            # print(args)
     if args.save_json:
         print("Saving configuration to:", args.save_json)
         with open(args.save_json, 'wt') as f:
@@ -73,24 +86,26 @@ def main():
         print(arg)
     # print(args.remote)
     # for host in args.remote:
-    #    print(host)
-# Determine if monthly should be run.
+   # Determine if monthly should be run.
     if args.monthly:
         print("Monthly flag detected.")
         monthly = True
     else:
         print("No monthly flag set.")
+    if monthly:
+        print("Monthly backup today.")
+        backupfile = arg.directory+'/backup_'+arg.remote+'-'+full_date+'.tar'
+    else:
+        backupfile = arg.directory+'/backup_'+arg.remote+'-'+day_of_week+'.tar'
+    backuplog = backupfile.split('.')[0]+'.log'
+    print(backupfile)
+    print(backuplog)
+    if not os.path.exists(arg.directory):
+        print(arg.directory, "does not exist.  Creating it.")
+        os.makedirs(arg.directory)
 
+#
 # perform backup
-    host = args.remote
-    dir = args.directory
-    exclude = args.exclude
-    backup = args.backup
-    username = args.user
-    nossh = args.nossh
-    monthly = args.monthly
-    monthly_day = args.monthly_date
-    # backup_file =
 # report backup results
 
 
