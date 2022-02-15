@@ -9,6 +9,7 @@ import sys
 import os
 import argparse
 import json
+from datetime import datetime
 
 # initialize variables
 host = ""
@@ -20,7 +21,8 @@ monthly_day = ""
 monthly = False
 verbose_level = False
 day_of_month = ""
-day_of_week = ""
+day_of_week = datetime.today().strftime('%a')
+print("Today is", day_of_week)
 full_date = ""
 nossh = False
 test_run = False
@@ -61,45 +63,12 @@ def main():
     #        print(args)
     if args.save_json:
         print("Saving configuration to:", args.save_json)
-        # print(args)
-        # print(type(args.save_json))
-        # del args.save_json
-        # print(args.save_json)
-        # exit()
         with open(args.save_json, 'wt') as f:
             # Do not save load_json and save_json to json config file
             del args.load_json
             del args.save_json
             del args.verbose
             json.dump(vars(args), f, indent=4)
-    #     parser = argparse.ArgumentParser()
-    #     parser.add_argument('-l', '--loadfile', required=False, action='store_true',
-    #                         help='Read parameters from configuration file.')
-    #     parser.add_argument(
-    #         '-s', '--save', required=False, action='store_false', help='Write to configuration file')
-    #     args = parser.parse_args()
-    # #     if args.loadfile:
-#         with open('hosts_backup.json', 'rt') as f:
-#             t_args = argparse.Namespace()
-#             t_args.__dict__.update(json.load(f))
-#             args = parser(namespace=t_args)
-#     else:
-#         parser = argparse.ArgumentParser(parents=[parser])
-#         parser.add_argument('-r', '--remote', type=str, nargs='+', required=True,
-#                             help='The remote host(s) to backup.')
-#         parser.add_argument('-d', '--directory', type=str, required=False,
-#                             help='Local directory backup target.')
-#         parser.add_argument('-u', '--user', type=str, required=True,
-#                             help='The remote user to connect as via ssh.')
-#         parser.add_argument('-x', '--exclude', type=str, nargs='+', required=True,
-#                             help='The file name containing file/directory names to exclude from the backup.')
-#         parser.add_argument('-n', '--nossh', action='store_true', required=False,
-#                             help='Do not connect with ssh aka perform a local backup.')
-#         parser.add_argument('-m', '--monthly', action='store_true', required=False,
-#                             help='Flag to set a monthly backup.')
-#    # parser.add_argument('-h', '--help', type=str, nargs='+', required=False,
-#     #                    help='The file name containing file/directory names to exclude from the backup.')
-#     args = parser.parse_args()
     for arg in [args]:
         print(arg)
     # print(args.remote)
@@ -113,7 +82,15 @@ def main():
         print("No monthly flag set.")
 
 # perform backup
-
+    host = args.remote
+    dir = args.directory
+    exclude = args.exclude
+    backup = args.backup
+    username = args.user
+    nossh = args.nossh
+    monthly = args.monthly
+    monthly_day = args.monthly_date
+    # backup_file =
 # report backup results
 
 
