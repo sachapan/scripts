@@ -13,7 +13,6 @@ from datetime import datetime
 
 
 def main():
-    monthly = False
     verbose_level = False
     day_of_month = datetime.today().strftime('%d')
     day_of_week = datetime.today().strftime('%a')
@@ -21,7 +20,7 @@ def main():
     # test_run = False
     parser = argparse.ArgumentParser()
     parser.add_argument('--save_json',
-                        help='Save settings to file in json format.  Only save, do not run.')
+                        help='Save settings to SAVE_JSON file in json format.  Only save, do not run.')
     parser.add_argument('-b', '--backupdir', type=str, nargs="+", required=False,
                         help='Directory/ies to backup.')
     parser.add_argument('--load_json',
@@ -31,7 +30,7 @@ def main():
     parser.add_argument('-d', '--directory', type=str, required=False,
                         help='Local directory wherein to store backup file and log.')
     parser.add_argument('-u', '--user', type=str, required=False,
-                        help='The remote user to connect as.')
+                        help='The remote username to connect as.')
     parser.add_argument('-q', '--quiet', action='store_true', required=False,
                         help='Decrease verbosity.')
     parser.add_argument('-v', '--verbose', action='store_true', required=False,
@@ -47,6 +46,26 @@ def main():
 
     args = parser.parse_args()
 
+    if not args.load_json or not args.remote and args.directory and args.backupdir:
+        print("Missing required parameters.  You must specify:")
+        print(f"Either:")
+        print(f"--load_json LOAD_JSON")
+        print(f"\t Load settings from file in json format. Command line options override loaded values.")
+        print(f"or")
+        print(f"-r REMOTE, --remote REMOTE")
+        print(f"\t The host to backup.")
+        print(
+            f"-b BACKUPDIR [BACKUPDIR ...], --backupdir BACKUPDIR [BACKUPDIR ...]")
+        print(f"\t Directories to backup.")
+        print(f"-d DIRECTORY, --directory DIRECTORY")
+        print(f"\t Local directory wherein to store backup file and log.  ")
+        print("Either:")
+        print(f"\t-u USER, --user USER")
+        print(f"\tThe remote username to connect as.")
+        print("or")
+        print(f"\t-n, --nossh")
+        print(f"\tDo not connect with ssh aka perform a local backup.")
+        exit(1)
     if args.load_json:
         with open(args.load_json, 'rt') as f:
             t_args = argparse.Namespace()
@@ -60,19 +79,17 @@ def main():
                 del args.load_json
             if args.verbose:
                 del args.verbose
+            if args.monthly:
+                del args.monthly
             json.dump(vars(args), f, indent=4)
         exit()
     if args.monthly:
         if args.verbose:
-            print("Monthly flag detected.")
-        monthly = True
+            print("Monthly flag detected.  Monthly backup will be run for today.")
+        backup_file = args.directory+'/backup_'+args.remote+'-'+full_date+'.tar'
     else:
         if args.verbose:
             print("No monthly flag set.")
-    if monthly:
-        print("Monthly backup today.")
-        backup_file = args.directory+'/backup_'+args.remote+'-'+full_date+'.tar'
-    else:
         backup_file = args.directory+'/backup_'+args.remote+'-'+day_of_week+'.tar'
     backuplog = backup_file.split('.')[0]+'.log'
     if args.verbose:
