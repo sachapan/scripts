@@ -5,10 +5,11 @@
 # Sacha Panasuik
 # Initial script creation: January 14, 2021
 # imports
-import sys
+# import sys
 import os
 import argparse
 import json
+import subprocess
 from datetime import datetime
 
 
@@ -29,7 +30,7 @@ def main():
     parser.add_argument('-r', '--remote', type=str, required=False,
                         help='The host to backup.')
     parser.add_argument('-d', '--directory', type=str, required=False,
-                        help='Local directory backup target.')
+                        help='Local directory wherein to store backup file and log.')
     parser.add_argument('-u', '--user', type=str, required=False,
                         help='The remote user to connect as.')
     parser.add_argument('-q', '--quiet', action='store_true', required=False,
@@ -86,25 +87,56 @@ def main():
     # perform remote backup
     # first test for successful ssh connection if we are doing that sort of thing.
     if not args.nossh:
-        ssh_test = 'ssh -q '+args.user+'@'+args.remote+' exit'
+        ssh_test_cmd = f"ssh -q {args.user}@{args.remote} exit"
         if args.verbose:
-            print("Testing ssh connection with:", ssh_test)
-        if os.system(ssh_test) != 0:
+            print("Testing ssh connection with:", ssh_test_cmd)
+#        if os.system(ssh_test) != 0:
+        sshtest = subprocess.run(
+            ssh_test_cmd, capture_output=True, shell=True, check=True)
+        if sshtest.returncode != 0:
             raise Exception('Cannot connect with: '+ssh_test)
-        ssh_cmd = 'ssh '+args.user+'@'+args.remote + \
-            ' \"tar cvf - -X '+args.exclude+' ' + \
-            ' '.join(args.backupdir)+'\" 2>'+backuplog+' | '+dd_cmd
-        if os.system(ssh_cmd) != 0:
+#        ssh_cmd = 'ssh '+args.user+'@'+args.remote + \
+#            ' \"tar cvf - -X '+args.exclude+' ' + \
+#            ' '.join(args.backupdir)+'\" 2>'+backuplog+' | '+dd_cmd
+#        if os.system(ssh_cmd) != 0:
+        backup_dir = ' '.join(args.backupdir)
+        ssh_cmd = []
+        ssh_cmd.append(
+            f"ssh {args.user}@{args.remote} tar -cvf - -X {args.exclude} {backup_dir} 2>{backuplog} | {dd_cmd}")
+
+        output = subprocess.run(
+            ssh_cmd, capture_output=True, shell=True, check=True)
+        if output.returncode != 0:
             raise Exception('ssh backup failed.')
     else:
         # perform local backup
-        backup_cmd = 'tar -cvf - -X '+args.exclude+' ' + \
-            ' '.join(args.backupdir)+' 2> '+backuplog+' | '+dd_cmd
+        #        backup_cmd = 'tar -cvf - -X '+args.exclude+' ' + \
+        #            ' '.join(args.backupdir)+' 2> '+backuplog+' | '+dd_cmd
+        backup_dir = ' '.join(args.backupdir)
+#        print(backup_dir)
+        # backup_cmd = f'tar -cvf - -X {args.exclude} {backup_dir} | {dd_cmd}'
+        # 2> {backuplog} | {dd_cmd}'
+        backup_cmd = []
+        backup_cmd.append("tar")
+        backup_opts = f'-cvf {backup_file} -X {args.exclude} {backup_dir}'
+        backup_cmd.append(backup_opts)
+        backup_cmd = [f"tar -cvf {backup_file} -X {args.exclude} {backup_dir}"]
         if args.verbose:
             print("Local backup command:", backup_cmd)
         # exit()
-        if os.system(backup_cmd) != 0:
+#        if os.system(backup_cmd) != 0:
+        # backup_cmd = f'{args.exclude}'
+#        backup_cmd = ['ls', '/etc/dnsmasq.d']
+        output = subprocess.run(
+            backup_cmd, capture_output=True, shell=True, check=True)
+        print(output.stdout)
+        print(output.stderr)
+        if output.returncode != 0:
+            #        return_value = subprocess.call(backup_cmd)
+            #        if return_value != 0:
+            print(output.returncode)
             raise Exception('Local backup failed.')
+        exit()
     backup_size = os.path.getsize(backup_file)
     backup_log_size = os.path.getsize(backuplog)
     if not args.quiet:
