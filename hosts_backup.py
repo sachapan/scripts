@@ -115,18 +115,17 @@ def main():
             print("Local backup command:", backup_cmd)
         output = subprocess.run(
             backup_cmd, capture_output=True, shell=True, check=True)
-        print(output.stdout)
-        print(output.stderr)
+        # print(output.stdout)
+        # print(output.stderr)
         if output.returncode != 0:
             print(output.returncode)
             raise Exception('Local backup failed.')
-        exit()
     backup_size = os.path.getsize(backup_file)
     backup_log_size = os.path.getsize(backuplog)
     if not args.quiet:
-        print("Backup file is:", backup_size, " bytes.")
+        print("Backup file is:", backup_size, "bytes.")
         if args.verbose:
-            print("Backup log file is:", backup_log_size, " bytes.")
+            print("Backup log file is:", backup_log_size, "bytes.")
 
 
 if __name__ == '__main__':
