@@ -12,7 +12,7 @@ while True:
         break
     line2 = line.replace("\n","")
     line3 = line2.lstrip();
-    if line3.startswith("#"):
+    if line3.startswith("#") or line3.startswith(";"):
         continue
     if line2:
         print(line2)
