@@ -1,0 +1,7 @@
+# Sacha Panasuik
+# sachapan@gmail.com
+# This script prints the last column
+# November 22, 2022
+
+#awk '/^$/ {next} $1 !~ /#/ { print}'
+awk '{print $NF}'
