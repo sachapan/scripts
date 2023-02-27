@@ -5,7 +5,7 @@ import smtplib
 SERVER = "localhost"
 
 FROM = "garage@huey.homeip.net"
-TO = ["sachapan@gmail.com"] # must be a list
+TO = ["pushbullet@mailrise.xyz"] # must be a list
 
 SUBJECT = "Hello!"
 
