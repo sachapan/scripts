@@ -2,8 +2,8 @@
 # Find the number of symmetrical numbers between the variables:
 # start_num
 # end_num
-start_num = 0
-end_num = 100001
+start_num = 1000
+end_num = 100000
 
 def is_symmetrical_num(n):
     return str(n) == str(n)[::-1]
