@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import os
 from pyzbar.pyzbar import decode
 from PIL import Image
