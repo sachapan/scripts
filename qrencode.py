@@ -6,8 +6,9 @@ import qrcode
 def main():
     ssid = input("Enter SSID: ")
     input_pass = input("Enter passcode: ")
+    filename = input("Enter filename: ")
     input_data = "WIFI:T:WPA;S:" + ssid + ";P:" + input_pass + ";H:;;"
-    print(input_data)
+    #print(input_data)
     qr = qrcode.QRCode(
             version=1,
             box_size=10,
@@ -16,7 +17,7 @@ def main():
     qr.add_data(input_data)
     qr.make(fit=True)
     img = qr.make_image(fill='black', back_color='white')
-    img.save('qrencode.png')
+    img.save(filename)
 
 if __name__ == "__main__":
     main()
