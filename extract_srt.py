@@ -32,9 +32,9 @@ def get_title(input_file):
         print(f"Error getting title metadata: {e.stderr}")
         return None
 
-def get_subtitles(video_file, title):
+def get_subtitles(video_file, srt_file):
     # TODO: Can I make this function work with python-ffmpeg?
-    srt_file = title + '.srt'
+    #srt_file = title + '.srt'
     cmd = ["ffmpeg", "-y", "-i", video_file, srt_file]
     try:
         subprocess.run(cmd, check=True, capture_output=True)
@@ -42,6 +42,7 @@ def get_subtitles(video_file, title):
         print(f"Error extracting subtitles: {e.stderr}")
     with open(srt_file, 'r', encoding='utf-8') as file:
         lines = file.readlines()
+    os.remove(srt_file)
     return(lines)
 
 def process_lines(lines):
@@ -81,25 +82,32 @@ def main():
         input_file = sys.argv[1]
         output_file = sys.argv[2]
     else:
-        print("Usage: python extract_srt.py [video file]")
+        print("Usage: extract_srt.py [video file] optional:[output file]")
         print("This script extracts the subtitle data from a supplied video file including")
-        print("title if present in the video file metadata.")
+        print("title if present in the video file metadata and writes the resulting srt data to")
+        print("[title].srt or the [output file] specified on the command line.")
+        print("To output to stdout only use: - for [output_file] parameter.")
         sys.exit(1)
     title = get_title(input_file)
-    subtitles = process_lines(get_subtitles(input_file, title))
+    srt_file = title + ".srt"
+    raw_srt_name = title + "raw.srt"
+    subtitles = process_lines(get_subtitles(input_file, raw_srt_name))
     if title:
         theme = ["Title: " + title + "\n"]
     else:
         theme = ["No Title\n"]
     srt = theme + subtitles
-    print(type(srt))
-    print("\n".join(srt))
-    if output_file:
+    if output_file == "-":
+        print("\n".join(srt))
+    elif output_file:
         with open(output_file, 'w', encoding='utf-8') as file2:
-            file2.writelines(srt)
+            file2.writelines("\n".join(srt))
+        print("srt data now available in: ", output_file)
     else:
-        print(srt)
-
+        with open(srt_file, "w", encoding="utf-8") as file2:
+            file2.writelines("\n".join(srt))
+        print("srt data now available in: ", srt_file)
+        #print("Completed:", srt_name)
     #if len(sys.argv) == 1:
         # Read input from stdin
     #    lines = sys.stdin.readlines()
