@@ -1,11 +1,27 @@
 #!env python3
 import sys
 import ffmpeg
+import re
 
 def get_metadata(input_file):
     try:
         metadata = ffmpeg.probe(input_file, show_entries="format_tags=title")
-        return metadata.get('format', {}).get('tags', {}).get('title', '')
+        title = metadata.get('format', {}).get('tags', {}).get('title', '')
+        #title = re.sub(":", "", title)
+        #title = re.sub('"', "", title)
+        title = re.sub("\.", "", title)
+        title = re.sub("\(", "- ", title)
+        title = re.sub("\)", "", title)
+        title = re.sub(",", "", title)
+
+        # remove quotation marks
+        # remove .
+        # replace ( with -
+        # remove )
+        if title:
+            return title.strip()
+        else:
+            return()
     except ffmpeg.Error as e:
         print(f"Error getting metadata: {e.stderr}")
         return None
