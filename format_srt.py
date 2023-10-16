@@ -24,6 +24,9 @@ def process_lines(lines):
         # Replace underscores with a single quote before 's' or 't'
         line = re.sub(r'_(s|t)\b', r"'\1", line)
 
+        # Remove html-like code
+        line = re.sub("<[^<]+?>", "", line)
+
         # Concatenate lines until the length is 100 characters
         if len(current_line) + len(line) <= 100:
             current_line += line + " "
