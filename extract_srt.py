@@ -1,6 +1,8 @@
 #!env python3
 
+
 # .5 download the video file
+# 
 # 1. Load srt file from video file supplied as a filename given as arg1
 # 2. Extract title
 # 3. Extract subtitles
@@ -12,6 +14,26 @@ import os
 import subprocess
 import ffmpeg
 import re
+import requests
+
+mytmp = "/home/sacha/tmp/"
+
+def download_file(url, mytmp):
+    if url.startswith("http"):
+        print("Found an http URL")
+        file_name = mytmp + url.split("/")[-1]
+        print("Downloading to: ", file_name)
+        query_parameters = {"downloadformat": "mp4"}
+        response = requests.get(url, params=query_parameters, stream=True)
+        if response.ok == 200:
+            with open(file_name, mode="wb") as file:
+                for chunk in response.iter_content(chunk_size=10 * 1024):
+                    file.write(chunk)
+    else:
+        file_name = url
+    # only download if passed a url
+    return(file_name)
+
 
 def get_title(input_file):
     try:
@@ -61,8 +83,10 @@ def process_lines(lines):
             continue
         # Replace underscores with a single quote before 's' or 't'
         line = re.sub(r'_(s|t)\b', r"'\1", line)
-        # Concatenate lines until the length is 100 characters
-        if len(current_line) + len(line) <= 100:
+        # Remove html stuff
+        line = re.sub("<[^<]+?>", "", line)
+        # Concatenate lines until the length is 140 characters
+        if len(current_line) + len(line) <= 140:
             current_line += line + " "
         else:
             result_lines.append(current_line.strip())
@@ -83,11 +107,15 @@ def main():
         output_file = sys.argv[2]
     else:
         print("Usage: extract_srt.py [video file] optional:[output file]")
-        print("This script extracts the subtitle data from a supplied video file including")
-        print("title if present in the video file metadata and writes the resulting srt data to")
+        print("This script optionally downloads and extracts the subtitle data from a supplied video file")
+        print("including title if present in the video file metadata and writes the resulting srt data to")
+        print("Attempts to download the [video file] if supplied a URL beginning with https://")
         print("[title].srt or the [output file] specified on the command line.")
         print("To output to stdout only use: - for [output_file] parameter.")
         sys.exit(1)
+    download = download_file(input_file, mytmp)
+    if download:
+        input_file = download
     title = get_title(input_file)
     srt_file = title + ".srt"
     raw_srt_name = title + "raw.srt"
