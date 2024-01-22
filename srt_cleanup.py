@@ -16,9 +16,11 @@ if __name__ == '__main__':
     with open(input_file,'r',encoding='utf8') as file1, open(output_file,'w',encoding='utf8') as file2:
         soup = BeautifulSoup(file1,"html.parser")
         for line in soup.stripped_strings:
-            if line[0].isdigit():
-                continue
-            file2.writelines((line,'\n'))
+            #if line[0].isdigit():
+            #    continue
+            if line.strip():
+                if not line[0].isdigit():
+                    file2.writelines((line,'\n'))
         print('Subtitle processing complete.')
         print('Output is now available in file:',output_file)
     sys.exit()
