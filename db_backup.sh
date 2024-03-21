@@ -1,13 +1,13 @@
 #!/bin/bash
 host=`hostname`
 SECONDS=0
-echo "Starting database enumeration and backup"
+echo "Starting database enumeration and backup on $host"
 #echo
 date
 #echo
-/usr/bin/mysql -s -r -e "show databases;" -N | while read dbname; do \
+/usr/bin/mariadb -s -r -e "show databases;" -N | while read dbname; do \
 #echo "Backup for database: $dbname"; \
-/usr/bin/mysqldump --complete-insert --single-transaction "$dbname" > \
+/usr/bin/mariadb-dump --complete-insert --single-transaction "$dbname" > \
 /var/backups/sql/"$dbname"_`date +%a`_`hostname`.sql; done
 #echo
 echo "Database backup to /var/backups/sql complete."
