@@ -17,7 +17,11 @@ echo "Database backup to /var/backups/sql complete."
 duration=$SECONDS
 if [ $(($duration / 60)) = 0 ]
   then
-    echo "$(($duration % 60)) seconds to complete."
+    if [ $(($duration / 60)) = 1 ]
+      then
+        echo "Completed in 1 second."
+    else
+      echo "$(($duration % 60)) seconds to complete."
   else
     echo "$(($duration / 60)) minutes and $(($duration % 60)) seconds to complete."
 fi
