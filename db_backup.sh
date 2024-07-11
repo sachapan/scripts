@@ -16,14 +16,15 @@ echo "Database backup to /var/backups/sql complete."
 #date
 duration=$SECONDS
 if [ $(($duration / 60)) = 0 ]
+then
+  if [ $(($duration / 60)) = 1 ]
   then
-    if [ $(($duration / 60)) = 1 ]
-      then
-        echo "Completed in 1 second."
-    else
-      echo "$(($duration % 60)) seconds to complete."
+     echo "Completed in 1 second."
   else
-    echo "$(($duration / 60)) minutes and $(($duration % 60)) seconds to complete."
+     echo "$(($duration % 60)) seconds to complete."
+  fi
+else
+  echo "$(($duration / 60)) minutes and $(($duration % 60)) seconds to complete."
 fi
 exit 0
 #/usr/bin/mysql --defaults-file=~/.my_cnf -s -r -e "show databases;" -N | while read dbname; do \
